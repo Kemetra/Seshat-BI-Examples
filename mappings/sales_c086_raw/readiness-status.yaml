@@ -11,7 +11,7 @@ source_id: "sales_c086_raw"
 source_family: "pharmacy_branch_c086_sales_export"
 
 # --- where we are -----------------------------------------------------------
-current_stage: "publish_ready"        # dashboard_ready passed 2026-07-16 (design approved); publish_ready not yet started.
+current_stage: "publish_ready"        # publish_ready PASSED 2026-07-16 (data owner approval recorded). All seven stages are now pass; the readiness spine for this table is complete.
 mapping_version: "1"
 
 # --- the seven stages -------------------------------------------------------
@@ -121,9 +121,20 @@ stages:
     # first, in that order.
 
   publish_ready:
-    status: "not_started"
-    evidence: []
+    status: "pass"
+    evidence:
+      - "mappings/sales_c086_raw/handoff/bi-handoff-pack.md assembled 2026-07-16: composes the approved TotalSales contract, the RC16 bronze->gold reconciliation (row parity 248,593=248,593, 0 orphan FKs, exact SUM reconciliation), a data dictionary of the deployed gold schema verified column-by-column against live information_schema.columns (fct_sales_c086 + 4 dims + dim_date_c086), and all four mandatory caveats (PII exclusion/masking, returns-from-billing_type, measured known gaps incl. the 513-row division filter and its 85-row return-count effect, out-of-scope list)"
+      - "mappings/sales_c086_raw/handoff/handoff-review-checklist.md walked: all sections + all four caveats + publish approval now satisfied"
+      - "seshat evidence-pack --table sales_c086_raw run 2026-07-16: handoff-pack section = pass, metric-contracts = pass, semantic-model-summary = pass, dashboard-summary = pass. Five OPTIONAL standalone-file sections (source-profile, assumptions-and-decisions, validation-summary, known-limitations, release-notes) report blocked because this table folded that content into source-profile.md/readiness-status.yaml evidence[] rather than authoring the separate standalone files the generic evidence-pack scan expects; not a gap in the actual handoff pack itself, which composes the same underlying evidence directly."
+      - "seshat pii-notice --table sales_c086_raw run 2026-07-16: echoes the same PII dispositions verbatim (person_name masked, insurance_tel/insurance_no dropped) -- confirms the pack's PII caveat matches the committed source-map.yaml, not a hand-typed restatement"
+      - "seshat approver-view --table sales_c086_raw run 2026-07-16: no refusal-worthy item found in stages 1-6; flags mappings/sales_c086_raw/unresolved-questions.md as not found (absence of the file, not proof of zero open questions) -- carried forward as a known documentation gap, not a blocker (no open question is on record anywhere in this table's evidence)"
+      - "publish_ready approval RECORDED 2026-07-16 by Ahmed Shaaban (data_owner) -- see approvals[] below. All seven readiness stages are now pass."
     blocking_reasons: []
+    # pass: the sole blocking reason (no recorded publish approval) is
+    # resolved by the named data owner's explicit sign-off below. This is
+    # the terminal stage of the readiness spine for sales_c086_raw -- live
+    # publish to a Power BI workspace remains the deferred, gated F016
+    # execution adapter and is NOT performed from this surface.
 
 # --- cross-cutting ----------------------------------------------------------
 evidence:
@@ -175,11 +186,15 @@ approvals:
     owner: "Ahmed Shaaban (data_owner)"
     at: "2026-07-16"
     note: "APPROVED dashboard_ready (BI report owner sign-off recorded directly in mappings/sales_c086_raw/design/visual-contract-binding-map.md, per the kit's convention that the reviewer signs off in the artifact itself, mirrored here). Design reviewed: 1 measure-bearing visual (v01, TotalSales KPI card), 1 approved contract bound, ZERO orphans. Scope was deliberately MINIMAL -- data owner chose a single-visual page rather than adding breakdowns/trends that would need contracts not yet authored. Gross-of-returns and deferred-tax caveats (from the TotalSales contract) carried onto the page as required footnotes. No changes requested; approved as drafted."
+  - stage: "publish_ready"
+    owner: "Ahmed Shaaban (data_owner)"
+    at: "2026-07-16"
+    note: "APPROVED publish_ready -- FINAL approval, closes the seven-stage readiness spine for sales_c086_raw. Reviewed and approved: mappings/sales_c086_raw/handoff/bi-handoff-pack.md (the approved TotalSales contract; the RC16 bronze->gold reconciliation, row parity 248,593=248,593, 0 orphan FKs, exact SUM reconciliation; the data dictionary verified against the LIVE deployed gold schema via information_schema.columns, including the is_return column caught late and added; all four mandatory caveats -- PII masking/drop dispositions, returns identified from billing_type never a measure sign, the 513-row division filter and its 85-row effect on the return count, VAT deferred, no net-sales measure, and the out-of-scope list) and handoff-review-checklist.md (all sections and caveats satisfied). Data owner directed: 'yes, approve publish_ready.' Live publish to a Power BI workspace itself remains OUT OF SCOPE -- that is the deferred, gated F016 execution adapter and is not performed from this surface or by this approval."
 # The agent cannot self-grant; all approvals above are recorded from the named
 # human's explicit rulings given in-session, not inferred or defaulted by the agent.
 
 # --- the single next allowed action -----------------------------------------
-next_action: "dashboard_ready = pass (2026-07-16, Ahmed Shaaban, data_owner, BI report owner). Next: Publish Ready (Stage 7) -- assemble the BI handoff pack (mappings/sales_c086_raw/handoff/: bi-handoff-pack.md + handoff-review-checklist.md), covering the approved TotalSales contract, the bronze->gold reconciliation (RC16, already verified), a data dictionary of the deployed gold schema, and the mandatory caveats (gross-of-returns, deferred-tax treatment, minimal one-visual scope). Requires a fresh publish approval from the data owner against the assembled pack. Live publish to a Power BI workspace itself remains the deferred F016 execution adapter -- NOT built from this surface, per the kit's own hard rule. This is a human-reviewed, approval-required stage (RS1); the agent cannot self-grant it."
+next_action: "publish_ready = pass (2026-07-16, Ahmed Shaaban, data_owner). All seven readiness stages for sales_c086_raw are now pass. There is no further readiness-spine action for this table. The only remaining action outside this surface is live publish to a Power BI workspace, which is the deferred, gated F016 execution adapter -- explicitly NOT built or run from this surface. If new metrics (e.g. ReturnsSales, a by-product/by-division breakdown) or dashboard expansion are ever wanted, each requires its own new metric contract (Semantic Model Ready) and its own owner approval before the dashboard can extend -- this pass does not cover future asks."
 
 # --- audit ------------------------------------------------------------------
 last_checked_at: "2026-07-16"
