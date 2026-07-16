@@ -1,0 +1,13 @@
+* text=auto
+
+*.tmdl   text eol=crlf
+*.pbir   text eol=crlf
+*.pbism  text eol=crlf
+*.json   text eol=crlf
+*.sql    text eol=lf
+*.md     text eol=lf
+*.py     text eol=lf
+
+*.pbix   binary
+*.abf    binary
+*.png    binary
