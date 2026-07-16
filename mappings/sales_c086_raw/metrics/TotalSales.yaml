@@ -17,6 +17,18 @@ binds_to:
 time_additivity: "fully"   # transaction/line-grain fact; sum across days is valid
 unit: "EGP"
 
+# OPTIONAL (F-DAXGEN): consumed by `retail generate` to emit a verified DAX
+# measure. Added 2026-07-16 -- kind:base, no filter, matching the already-
+# approved A2 ruling exactly (gross of returns: sum every row, no exclusion).
+# This does not re-decide anything; formula_intent above remains the
+# authoritative plain-language statement of intent.
+definition:
+  kind: base
+  aggregation: sum
+  source:
+    table: gold.fct_sales_c086
+    column: gross_sales
+
 readiness:
   status: "pass"
   evidence:
